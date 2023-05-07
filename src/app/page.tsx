@@ -1,3 +1,9 @@
+import Dock from './dock';
+
 export default function Home() {
-  return <main>hi</main>;
+  return (
+    <main>
+      <Dock />
+    </main>
+  );
 }
