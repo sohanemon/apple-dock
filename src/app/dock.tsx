@@ -4,8 +4,10 @@ import {
   MotionValue,
   motion,
   useMotionValue,
+  useSpring,
   useTransform,
 } from 'framer-motion';
+import { useRef } from 'react';
 
 export default function Dock() {
   const mouseX = useMotionValue(Infinity);
@@ -30,9 +32,17 @@ export default function Dock() {
   );
 }
 function Icon({ mouseX }: { mouseX: MotionValue<number> }) {
-  const width = useTransform(mouseX, [0, 300, 500], [40, 60, 40]);
+  const iconRef = useRef<HTMLDivElement>(null);
+  const distance = useTransform(mouseX, (val) => {
+    let bounds = iconRef.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - bounds.x - bounds.width / 2;
+  });
+  let widthSync = useTransform(distance, [-100, 0, 100], [40, 80, 40]);
+  let width = useSpring(widthSync, { mass: 0.1, stiffness: 100, damping: 10 });
+
   return (
     <motion.div
+      ref={iconRef}
       style={{ width }}
       className='w-10 bg-gray-300 rounded-full cursor-pointer aspect-square'
     ></motion.div>
